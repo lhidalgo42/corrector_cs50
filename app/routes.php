@@ -18,4 +18,6 @@ Route::post('/student/get/{rut}','StudentsController@show');
 Route::group(array('before' => 'auth'), function() {
     Route::get('/admin', ['as' => 'home', 'uses' => 'TeacherController@index']);
     Route::get('/admin/courses','TeacherController@courses');
+    Route::get('/admin/import','ImportController@index');
+    Route::post('/admin/import/store/students','ImportController@students');
 });
