@@ -20,7 +20,7 @@
     <![endif]-->
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="/js/jquery.js"></script>
+    <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
 
 </head>
@@ -29,7 +29,7 @@
     <div class="form">
         {{ Form::open(['route'=> 'sessions.store','class' => 'login-form']) }}
         {{ Form::email('email', Input::old('email'), array('placeholder' => 'Correo','id' => 'mail','required','autofocus')) }}
-        {{ Form::password('password',array('placeholder' => 'Contraseña', 'id' => 'pass' ,'required')) }}
+        {{ Form::password('password',array('placeholder' => 'Contraseña', 'id' => 'pass' ,'required','autocomplete'=>'off')) }}
         <button>login</button>
         @if(Session::has('error'))
             <p class="message">{{Session::get('error')}}</p>
@@ -37,10 +37,5 @@
         {{ Form::close() }}
     </div>
 </div>
-    <script>
-        $('.message a').click(function () {
-            $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
-        });
-    </script>
 </body>
 </html>

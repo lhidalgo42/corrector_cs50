@@ -11,9 +11,14 @@ class UserTableSeeder extends Seeder
             'password' => '4380.UoY'
         ]);
         User::create([
-            'name' => 'Pablo Carrasco',
-            'email' => 'pablo.carrasco.m@uai.cl',
-            'password' => '2890.Rsq'
+        'name' => 'Pablo Carrasco',
+        'email' => 'pablo.carrasco.m@uai.cl',
+        'password' => '2890.Rsq'
+    ]);
+        User::create([
+            'name' => 'Cristobal Ugarte',
+            'email' => 'crugaterte@uai.cl',
+            'password' => '3378-SsW'
         ]);
     }
 
