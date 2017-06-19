@@ -31,7 +31,7 @@ class StudentsController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
+	public function admin()
 	{
 		//
 	}

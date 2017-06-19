@@ -1,5 +1,6 @@
 <ul class="nav nav-sidebar">
-    <li class="active"><a href="/admin/courses">Cursos</a></li>
+    <li><a href="/admin/users">Usuarios</a></li>
+    <li><a href="/admin/courses">Cursos</a></li>
     <li><a href="/admin/students">Alumnos</a></li>
     <li><a href="/admin/import">Importar</a></li>
     <li><a href="/admin/export">Exportar</a></li>

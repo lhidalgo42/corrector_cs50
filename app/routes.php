@@ -20,4 +20,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('/admin/courses','TeacherController@courses');
     Route::get('/admin/import','ImportController@index');
     Route::post('/admin/import/store/students','ImportController@students');
+
+    Route::get('/admin/users','UsersController@index');
+    Route::get('/admin/students','StudentsController@admin');
 });
