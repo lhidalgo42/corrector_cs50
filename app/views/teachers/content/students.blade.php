@@ -13,15 +13,17 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($users as $user)
+            @foreach($students as $student)
                 <tr>
-                    <td>{{$user->name}}</td>
-                    <td>{{$user->email}}</td>
-                    <td>{{\Carbon\Carbon::parse($user->last_login)->diffForHumans()}}</td>
-                    <td>{{\Carbon\Carbon::parse($user->created_at)->diffForHumans()}}</td>
+                    <td>{{$student->rut}}</td>
+                    <td>{{$student->name}}</td>
+                    <td>{{$student->email}}</td>
+                    <td>{{Course::find($student->course_id)->section}}</td>
+                    <td>{{\Carbon\Carbon::parse($student->created_at)->diffForHumans()}}</td>
                 </tr>
             @endforeach
             </tbody>
         </table>
+        {{$students->links()}}
     </div>
 @endsection

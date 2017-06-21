@@ -33,7 +33,8 @@ class StudentsController extends \BaseController {
 	 */
 	public function admin()
 	{
-		//
+		$students = Student::paginate(15);
+		return View::make('teachers.content.students')->with(compact('students'));
 	}
 
 	/**
