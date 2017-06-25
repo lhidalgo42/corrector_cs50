@@ -27,6 +27,7 @@ class ImportController extends \BaseController
         $row = 1;
         if (($handle = fopen($path, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
+                $data = array_map("utf8_encode", $data);
                  if($row != 1) {
                      $count = Student::where('rut',str_replace(".","",$data[1]))->count();
                      if($count==0) {

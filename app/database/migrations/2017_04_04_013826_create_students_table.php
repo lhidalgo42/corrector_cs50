@@ -17,6 +17,7 @@ class CreateStudentsTable extends Migration {
 			$table->increments('id');
             $table->string('rut',10)->unique();
             $table->string('name');
+            $table->string('last_name');
             $table->string('email')->unique();
             $table->integer('course_id');
 			$table->timestamps();

@@ -20,6 +20,7 @@ class CreateHomeworkStudentTable extends Migration {
 			$table->integer('student_id')->unsigned()->index();
 			$table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->string('filename');
+            $table->decimal('grade');
             $table->string('console');
             $table->integer('levenshtein');
 			$table->timestamps();
