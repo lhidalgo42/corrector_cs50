@@ -58,7 +58,7 @@ class HomeworkController extends \BaseController
         else
             $homework = $homework->first();
 
-        $path = public_path() . '/' . Input::get('week') . '/' . Input::get('name');
+        $path = public_path() . '/' .Input::get('course').'/'. Input::get('week') . '/' . Input::get('name');
         if (!File::exists($path)) {
             File::makeDirectory($path, 0777, true, true);
         }
@@ -67,7 +67,7 @@ class HomeworkController extends \BaseController
         Zipper::make($path . '/archivo.zip')->extractTo($path);
         $files = File::allFiles($path);
         foreach ($files as $file) {
-            if (substr($file, -4) == "html") {
+            if (substr($file, -4) != "html") {
                 $fileName = iconv(mb_detect_encoding($file, mb_detect_order(), true), "UTF-8", $file);
                 $palabras = explode('_', $fileName);
                 $type = 0;
@@ -91,6 +91,20 @@ class HomeworkController extends \BaseController
                                 $entrega->homework_id = $homework->id;
                                 $entrega->student_id = $student->id;
                                 $entrega->filename = $file;
+                                if(Input::get('check') == 'exist'){
+                                    $entrega->grade = 7;
+                                }
+                                else {
+                                    if (substr($file, -1) == "c") {
+                                        $content = file_get_contents($file);
+                                        for ($i = 0; $i < count(Input::get('options')['int']); $i++) {
+                                            $content = preg_replace('GetInt()', Input::get('options')['int'][$i], $content, 1);
+                                            $content = preg_replace('GetChar()', '"'.Input::get('options')['char'][$i].'"', $content, 1);
+                                            $content = preg_replace('GetString()', '"'.Input::get('options')['string'][$i].'"', $content, 1);
+                                        }
+                                        file_put_contents($file,$content);
+                                    }
+                                }
                                 $entrega->save();
                             }
                         }
@@ -101,54 +115,6 @@ class HomeworkController extends \BaseController
             }
         }
 
-    }
-
-    /**
-     * Display the specified resource.
-     * GET /homework/{id}
-     *
-     * @param  int $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * GET /homework/{id}/edit
-     *
-     * @param  int $id
-     * @return Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * PUT /homework/{id}
-     *
-     * @param  int $id
-     * @return Response
-     */
-    public function update($id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * DELETE /homework/{id}
-     *
-     * @param  int $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 
 }
