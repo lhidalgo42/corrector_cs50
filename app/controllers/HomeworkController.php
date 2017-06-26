@@ -33,6 +33,7 @@ class HomeworkController extends \BaseController
      */
     public function store()
     {
+        set_time_limit(600);
         $zip = Input::file('zip');
         $fileName = $zip->getClientOriginalName();
         ## CREACION DE LA ACTIVIDAD EN LA BBDD, SI NO EXISTE SE CREA UNA ###
@@ -79,83 +80,102 @@ class HomeworkController extends \BaseController
         $files = File::allFiles($path);
         foreach ($files as $file) {
             $fileInfo = pathinfo($file);
-            $extension = $fileInfo['extension'];
-            $file = $fileInfo['basename'];
-            $dirName = $fileInfo['dirname'];
-            if($extension == 'html')
-                File::delete($dirName.'/'.$file);
-            if ($extension != "html" && $file != "archivo.zip") {
+            if (!empty($fileInfo['extension'])) {
+                $extension = $fileInfo['extension'];
+                $file = $fileInfo['basename'];
+                $dirName = $fileInfo['dirname'];
+                if ($extension == 'html')
+                    File::delete($dirName . '/' . $file);
+                if ($extension != "html" && $file != "archivo.zip") {
 
-                $fileName = iconv(mb_detect_encoding($file, mb_detect_order(), true), "UTF-8", $file);
-                $palabras = explode('_', substr($fileName, 0, -2));
-                $studentName = $palabras[0];
-                $GLOBALS['partialName'] = explode(" ", $studentName);
+                    $fileName = iconv(mb_detect_encoding($file, mb_detect_order(), true), "UTF-8", $file);
+                    $palabras = explode('_', substr($fileName, 0, -2));
+                    $studentName = $palabras[0];
+                    $GLOBALS['partialName'] = explode(" ", $studentName);
+                    if (count($GLOBALS['partialName']) == 3) {
+                        $ruts = array();
+                        if (count($palabras) == 5)
+                            $ruts = array($palabras[4]);
+                        elseif (count($palabras) == 6)
+                            $ruts = array($palabras[4], $palabras[5]);
 
-                $ruts = array();
-                if (count($palabras) == 5)
-                    $ruts = array($palabras[4]);
-                elseif (count($palabras) == 6)
-                    $ruts = array($palabras[4], $palabras[5]);
-
-                $students = array();
-                if (count($ruts) == 2) {
-                    $students = Student::where('rut', 'LIKE', '%' . $ruts[0] . '%')->orWhere('rut', 'LIKE', '%' . $ruts[1] . '%')->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%' . $GLOBALS['partialName'][0] . '%')
-                            ->where('name', 'LIKE', '%' . $GLOBALS['partialName'][1] . '%')
-                            ->where('name', 'LIKE', '%' . $GLOBALS['partialName'][2] . '%');
-                    })->get();
-                } elseif (count($ruts) == 1) {
-                    $students = Student::where('rut', 'LIKE', '%' . $ruts[0] . '%')->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%' . $GLOBALS['partialName'][0] . '%')
-                            ->where('name', 'LIKE', '%' . $GLOBALS['partialName'][1] . '%')
-                            ->where('name', 'LIKE', '%' . $GLOBALS['partialName'][2] . '%');
-                    })->get();
-                } elseif (count($ruts) == 0) {
-                    $students = Student::where('name', 'LIKE', '%' . $GLOBALS['partialName'][0] . '%')
-                        ->where('name', 'LIKE', '%' . $GLOBALS['partialName'][1] . '%')
-                        ->where('name', 'LIKE', '%' . $GLOBALS['partialName'][2] . '%')->get();
-                }
-
-                foreach ($students as $student) {
-                    $entrega = HomeworkStudent::where('homework_id', $homework->id)->where('student_id', $student->id)->get();
-                    if (count($entrega) == 0 || true) {
-                        $entrega = new HomeworkStudent();
-                        $entrega->homework_id = $homework->id;
-                        $entrega->student_id = $student->id;
-                        $entrega->filename = $file;
-                        if (Input::get('check') == 'exist')
-                            $entrega->grade = 7;
-
-                        if ($extension == 'c') {
-                            $consoleFileName =preg_replace('/[^\00-\255]+/u', '', substr(str_replace(" ", "_", $file), 0, -2));
-                            $content = file_get_contents($dirName.'/'.$file);
-                            for ($i = 0; $i < count(Input::get('options')['int']); $i++) {
-                                $content = preg_replace('/GetInt()/', '"' . Input::get('options')['int'][$i] . '"', $content, 1);
-                                $content = preg_replace('/GetChar()/', '"' . Input::get('options')['char'][$i] . '"', $content, 1);
-                                $content = preg_replace('/GetString()/', '"' . Input::get('options')['string'][$i] . '"', $content, 1);
-                            }
-
-                            file_put_contents($dirName.'/'.$consoleFileName.'.c', $content);
-                            $console = exec('cd "' . $dirName . '"            
-                            make ' . $consoleFileName);
-                            $console = exec('cd "' . $dirName . '" 
-                            ./'.$consoleFileName);
-                            $entrega->console = $console;
-                            if(!empty($console))
-                                $entrega->grade = 7;
-                            else
-                                $entrega->grade = 4;
-                            $entrega->content = $content;
-
+                        $students = array();
+                        if (count($ruts) == 2) {
+                            $students = Student::where('rut', 'LIKE', '%' . $ruts[0] . '%')->orWhere('rut', 'LIKE', '%' . $ruts[1] . '%')->orWhere(function ($query) {
+                                $query->where('name', 'LIKE', '%' . $GLOBALS['partialName'][0] . '%')
+                                    ->where('name', 'LIKE', '%' . $GLOBALS['partialName'][1] . '%')
+                                    ->where('name', 'LIKE', '%' . $GLOBALS['partialName'][2] . '%');
+                            })->get();
+                        } elseif (count($ruts) == 1) {
+                            $students = Student::where('rut', 'LIKE', '%' . $ruts[0] . '%')->orWhere(function ($query) {
+                                $query->where('name', 'LIKE', '%' . $GLOBALS['partialName'][0] . '%')
+                                    ->where('name', 'LIKE', '%' . $GLOBALS['partialName'][1] . '%')
+                                    ->where('name', 'LIKE', '%' . $GLOBALS['partialName'][2] . '%');
+                            })->get();
+                        } elseif (count($ruts) == 0) {
+                            $students = Student::where('name', 'LIKE', '%' . $GLOBALS['partialName'][0] . '%')
+                                ->where('name', 'LIKE', '%' . $GLOBALS['partialName'][1] . '%')
+                                ->where('name', 'LIKE', '%' . $GLOBALS['partialName'][2] . '%')->get();
                         }
-                        $entrega->save();
-                    }
 
+                        foreach ($students as $student) {
+                            $entrega = HomeworkStudent::where('homework_id', $homework->id)->where('student_id', $student->id)->get();
+                            if (count($entrega) == 0) {
+                                $entrega = new HomeworkStudent();
+                                $entrega->homework_id = $homework->id;
+                                $entrega->student_id = $student->id;
+                                $entrega->filename = $file;
+                            } else
+                                $entrega = $entrega->first();
+
+                            if (Input::get('check') == 'exist')
+                                $entrega->grade = 7;
+
+                            if ($extension == 'c') {
+                                $consoleFileName = preg_replace('/[^\00-\255]+/u', '', substr(str_replace(" ", "_", $file), 0, -2));
+                                $content = file_get_contents($dirName . '/' . $file);
+                                for ($i = 0; $i < count(Input::get('options')['int']); $i++) {
+                                    $content = preg_replace("/GetInt\(\)/", Input::get('options')['int'][$i], $content, 1);
+                                    $content = preg_replace("/GetChar\(\)/", '"' . Input::get('options')['char'][$i] . '"', $content, 1);
+                                    $content = preg_replace("/GetString\(\)/", '"' . Input::get('options')['string'][$i] . '"', $content, 1);
+                                }
+                                file_put_contents($dirName . '/' . $consoleFileName . '.c', $content);
+                                $comand = $dirName .'/'. $consoleFileName;
+                                $console = shell_exec('make ' . $comand);
+                                    
+                                if($console){
+                                    $entrega->console = $console;
+                                
+                                    if ($console != "" )
+                                        $entrega->grade = 7;
+                                    else
+                                        $entrega->grade = 4;
+                                }
+                                $entrega->content = $content;
+
+                            }
+                            $entrega->save();
+                        }
+
+                    }
                 }
+
             }
 
-
         }
-        return Redirect::back();
+        return Redirect::to('/admin/homework/upload');
+    }
+
+    public function test()
+    {
+        $name = "NICOLAS MORGADO WEINBERGER_11928226_assignsubmission_file_19686898-4";
+        $fileInfo = pathinfo($name);
+        dd($fileInfo);
+
+    }
+
+    public function showGrades()
+    {
+        return View::make('teachers.content.gradesTable');
     }
 }
