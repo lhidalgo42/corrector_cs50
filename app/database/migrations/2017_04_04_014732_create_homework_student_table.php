@@ -22,7 +22,7 @@ class CreateHomeworkStudentTable extends Migration {
             $table->string('filename');
             $table->decimal('grade');
             $table->string('console');
-            $table->integer('levenshtein');
+            $table->text('content');
 			$table->timestamps();
 		});
 	}
