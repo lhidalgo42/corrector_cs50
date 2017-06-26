@@ -25,4 +25,5 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('/admin/students','StudentsController@admin');
     Route::get('/admin/homework/upload','HomeworkController@create');
     Route::post('/admin/import/store/homeworks','HomeworkController@store');
+    Route::get('/prueba','HomeworkController@test');
 });
